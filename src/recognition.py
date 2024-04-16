@@ -14,10 +14,14 @@ def get_file_content(filePath):
     with open(filePath, 'rb') as fp:
         return fp.read()
 if __name__ == '__main__':
+    fileDir = os.getcwd() + "\\uploads\\"
+    #显示该文件夹下所有文件名
+    print(os.listdir(fileDir))
 
     filename = input("请输入需要识别的文件名（wav）：")
-    flod_path = "F:/pycharm/pythonProject/src/uploads/"
-    full_name = os.path.join(flod_path, filename)
+
+    full_name = os.path.join(fileDir, filename)
+
     if file_exists(full_name) == False:
         print("文件不存在")
         exit()
