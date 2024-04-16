@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>录音页面</title>
+</head>
+<body>
+    <h1>点击按钮录音</h1>
+    <button id="recordButton">开始录音</button>
+    <button id="stopButton" disabled>停止录音</button>
+
+    <script>
+        let mediaRecorder;
+        let chunks = [];
+        let mediaStream;
+        const recordButton = document.getElementById('recordButton');
+        const stopButton = document.getElementById('stopButton');
+        recordButton.addEventListener('click', startRecording);
+        stopButton.addEventListener('click', stopRecording);
+
+        async function startRecording() {
+            try {
+                mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorder = new MediaRecorder(mediaStream);
+
+                mediaRecorder.ondataavailable = function (e) {
+                    chunks.push(e.data);
+                }
+
+                mediaRecorder.onstop = function () {
+                    const blob = new Blob(chunks, { type: 'audio/opus' });
+                    const url = URL.createObjectURL(blob);
+
+                    // 在这里发送录制的音频数据到指定的IP地址，需要后端实现
+                    sendAudioData(blob);
+                    chunks = [];
+                }
+
+                mediaRecorder.start();
+                recordButton.disabled = true;
+                stopButton.disabled = false;
+            } catch (error) {
+                console.error('录音失败:', error);
+            }
+        }
+
+        function stopRecording() {
+            if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                mediaRecorder.stop();
+                mediaStream.getTracks().forEach(track => track.stop());
+                recordButton.disabled = false;
+                stopButton.disabled = true;
+            }
+        }
+
+        function sendAudioData(blob) {
+            // 替换为后端服务的地址
+            const serverUrl = 'http://127.0.0.1:3000/audio/upload';
+
+            // 创建一个 FormData 对象，用于包装音频数据
+            const formData = new FormData();
+            formData.append('audio', blob);
+
+            // 发送 POST 请求
+            fetch(serverUrl, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (response.ok) {
+                    console.log('音频数据发送成功');
+                } else {
+                    console.error('音频数据发送失败:', response.statusText);
+                }
+            })
+            .catch(error => {
+                console.error('音频数据发送失败:', error);
+            });
+        }
+    </script>
+</body>
+</html>
