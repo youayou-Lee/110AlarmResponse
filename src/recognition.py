@@ -1,5 +1,5 @@
 from aip import AipSpeech
-from src.youayou.changeFileType import file_exists
+from src.tools.changeFileType import file_exists
 import os
 
 """ 你的 APPID AK SK """
