@@ -66,7 +66,7 @@ def convert_to_wav_with_ffmpeg(filename):
     print(f"文件 {filename} 已使用ffmpeg转换为采样率为16000Hz的WAV文件：{new_filename}")
 
 if __name__ == "__main__":
-    folder_path = "F:/pycharm/pythonProject/src/uploads/"
+    folder_path = os.getcwd() + "\\..\\uploads\\"
     flag = True
     while flag:
         file_count = 0
